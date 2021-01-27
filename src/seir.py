@@ -1,4 +1,5 @@
 import numpy as np
+import yaml
 import scipy
 from scipy import integrate
 import json
@@ -85,6 +86,7 @@ def discrete_time_approx(rate, timestep):
 class SEIR:
 
     def __init__(self, paramset):
+        self.paramset = paramset
 
         # set numpy warning, error handling
         np.seterr(all='raise')
@@ -143,6 +145,11 @@ class SEIR:
         self.Rec[0] = paramset['start_R']
         self.N = make_array(dims=(self.duration, self.nodes, self.n_age), val=0)
         self.N[0] = np.array(paramset['start_S']) + np.array(paramset['start_E']) + np.array(paramset['start_I']) + np.array(paramset['start_R'])
+
+    def paramset_to_yaml(self, fp):
+        assert isinstance(paramset, dict)
+        with open(fp, 'w') as f:
+            yaml.safe_dump(paramset, f)
 
     def precalc_partial_foi(self):
 
@@ -315,5 +322,3 @@ if __name__ == '__main__':
     opts = parser.parse_args()
 
     main(opts)
-
-
