@@ -101,8 +101,13 @@ def contact():
 
 
 @pytest.fixture
-def partition(travel, contact):
-    return partition_contacts(travel, contact, daily_timesteps=10)
+def daily_timesteps():
+    return 10
+
+
+@pytest.fixture
+def partition(travel, contact, daily_timesteps):
+    return partition_contacts(travel, contact, daily_timesteps=daily_timesteps)
 
 
 @pytest.fixture

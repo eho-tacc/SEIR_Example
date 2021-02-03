@@ -17,6 +17,25 @@ Inputs needed
 import pandas as pd
 import numpy as np
 from collections import defaultdict
+import os
+
+
+def csv(df, name):
+    idx = -1
+    fp = '/dev/null'
+    if isinstance(df, pd.DataFrame):
+        ext = '.csv'
+    elif isinstance(df, np.ndarray):
+        ext = '.npy'
+    while os.path.exists(fp):
+        idx += 1
+        fp = f"capture/{name}{idx}{ext}"
+    if isinstance(df, pd.DataFrame):
+        df.to_csv(fp, index=False)
+    elif isinstance(df, np.ndarray):
+        np.save(fp[:-4], df)
+    print(f"Wrote to '{fp}'")
+
 
 # breaks single defintion rule -- also present in seir.py
 def discrete_time_approx(rate, timestep):
@@ -143,6 +162,14 @@ def partition_contacts(travel, contacts, daily_timesteps):
 
     tc_final = tc[['i', 'j', 'age_i', 'age_j', 'partitioned_per_capita_contacts']]
 
+    # breakpoint()
+    # DEBUG: capture outputs
+    csv(travel, 'travel')
+    csv(contacts, 'contacts')
+    csv(tr_partitions, 'tr_parts')
+    csv(tc_final, 'tc_final')
+    csv(contact_matrix(tc_final), 'phi')
+
     return tc_final
 
 def contact_matrix(contact_df):
@@ -186,7 +213,3 @@ def main():
 if __name__ == '__main__':
 
     main()
-
-
-
-

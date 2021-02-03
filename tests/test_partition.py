@@ -1,10 +1,15 @@
+import os
+import traceback
+import pdb
 import sys
 import pytest
+from attrdict import AttrDict
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import xarray
+import pickle
 from src.seir import *
 from src.implicit_node import *
 from copy import deepcopy
@@ -12,10 +17,24 @@ from copy import deepcopy
 SHOW_PLT = False
 
 
+def capture_config(dt, parent_dir, prefix='config'):
+    assert isinstance(dt, dict)
+    i = 0
+    fp = os.path.join(parent_dir, f"{prefix}{i}.pckl")
+    while os.path.exists(fp):
+        i += 1
+        fp = os.path.join(parent_dir, f"{prefix}{i}.pckl")
+    with open(fp, 'wb') as f:
+        pickle.dump(dt, f)
+    return None
+
+
 # the only actual test function in this module
 def test_partition(comparison, atol, rtol):
     # comparison is a tuple of resolved fixture values. expand it
     test, ref = comparison
+    capture_config(ref, './capture', prefix='ref_config')
+    capture_config(test, './capture', prefix='test_config')
     kwargs = dict(atol=atol, rtol=rtol)
 
     # always use allclose
